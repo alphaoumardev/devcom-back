@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
 
+    'feed.apps.FeedConfig',
     'dev.apps.DevConfig',
     'topics.apps.TopicsConfig',
     'posts.apps.PostsConfig',
