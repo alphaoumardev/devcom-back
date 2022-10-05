@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'cloudinary',
     'cloudinary_storage',
+    'knox',
+    'django_rest_passwordreset',
 
     'feed.apps.FeedConfig',
     'dev.apps.DevConfig',
@@ -95,7 +97,14 @@ DATABASES = {
     }
 }
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+    ]
+}
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 

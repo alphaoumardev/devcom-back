@@ -19,5 +19,4 @@ urlpatterns = [
         serializer_class=FeedCountSerializer),
         name="num"
     )
-
 ]
