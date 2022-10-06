@@ -5,17 +5,17 @@ from .models import *
 
 
 class TopicsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Topics
-        fields = ["name"]
+        fields = ["id", "name"]
+
 
 class TopicsCountSerializer(serializers.ModelSerializer):
-    name_count = SerializerMethodField()
+    post_count = SerializerMethodField()
 
-    def get_name_count(self, obj):
-        return obj.name_count
+    def get_post_count(self, obj):
+        return obj.post_count
 
     class Meta:
         model = Topics
-        fields = ["name", "name_count"]
+        fields = ["id", "name", "post_count"]
