@@ -8,15 +8,23 @@ from topics.models import Topics
 class Feeds(models.Model):
     title = models.CharField(max_length=100)
     content = models.CharField(max_length=10000, null=False)
-    likes = models.IntegerField(null=True, blank=True)
     saves = models.IntegerField(null=True, blank=True)
     shares = models.IntegerField(null=True, blank=True)
     topic = models.ForeignKey(Topics, on_delete=models.PROTECT, related_name="topic", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     posted = models.DateTimeField(auto_now_add=True, null=True)
+    likes = models.ManyToManyField(User, related_name="like_post")
 
     def __str__(self):
         return self.title
 
 
+class Replies(models.Model):
+    post = models.ForeignKey(Feeds, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.CharField(max_length=2000)
+    like = models.IntegerField(null=True, blank=True)
+    commentator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, )
+    commentated = models.DateTimeField(auto_now_add=True, null=True)
 
+    class Meta:
+        ordering = ['-like']

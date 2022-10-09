@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'feed.apps.FeedConfig',
     'dev.apps.DevConfig',
     'topics.apps.TopicsConfig',
-    'replies.apps.RepliesConfig',
     'activities.apps.ActivitiesConfig',
     'notifications.apps.NotificationsConfig'
 ]

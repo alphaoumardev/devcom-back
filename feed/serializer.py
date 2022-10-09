@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from feed.models import Feeds
+from feed.models import Feeds, Replies
 from topics.serializers import TopicsSerializer
 from users.serializer import UserSerializer
 
@@ -31,3 +31,17 @@ class FeedCountSerializer(serializers.ModelSerializer):
         model = Feeds
         fields = ["id", "content", "title", "likes", "saves", "shares",
                   "replies", "topic", "topic_count", "posted"]
+
+
+class ReplieSerializer(serializers.ModelSerializer):
+    commentator = UserSerializer(required=False, read_only=True)
+
+    class Meta:
+        model = Replies
+        fields = ["id", "post", "comment", "like", "commentator", "commentated"]
+
+
+class RepliePostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Replies
+        fields = ["id", "post", "comment", "like", "commentator", "commentated"]
