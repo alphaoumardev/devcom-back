@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from feed.models import Feeds
-from feed.serializer import FeedSerializer, FeedsSerializer, RepliePostSerializer
+from feed.serializer import FeedsSerializer, RepliePostSerializer, FeedSerializer
 from feed.models import Replies
 from feed.serializer import ReplieSerializer
 from topics.models import Topics
@@ -54,26 +54,47 @@ def get_feed_by_topic(request, pk):
     if request.method == 'GET':
         topic = Topics.objects.get(name=pk)
         feed = Feeds.objects.filter(topic=topic)
-        serializer = FeedSerializer(feed, many=True)
+        serializer = FeedsSerializer(feed, many=True)
         return Response(serializer.data)
 
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def like_one_feed(request, pk):
-    liked = False
+    liked_one = False
+    likes_count = ''
     if request.method == 'GET':
         feed = Feeds.objects.get(id=pk)
         if feed.likes.filter(id=request.user.id).exists():
-            liked = True
-        return Response({"liked": liked})
+            liked_one = True
+            likes_count = feed.likes.count()
+        return Response({'likes_count': likes_count, 'liked': liked_one})
 
     if request.method == "POST":
         likes_post = get_object_or_404(Feeds, id=pk)
 
         if likes_post.likes.filter(id=request.user.id).exists():
             likes_post.likes.remove(request.user)
+            liked_one = False
+
+            likes_count = likes_post.likes.count()
+            likes_post.save()
         else:
             likes_post.likes.add(request.user)
+            liked_one = True
+
+            likes_count = likes_post.likes.count()
+            likes_post.save()
+    return Response({'likes_count': likes_count, "liked": liked_one})
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def get_all_feeds_likes(request):
+    liked = False
+    if request.method == 'GET':
+        feed = Feeds.objects.all()
+        if feed.likes.filter(id=request.user.id).exists():
             liked = True
+            return liked
         return Response({"liked": liked})

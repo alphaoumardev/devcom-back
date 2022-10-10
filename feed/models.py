@@ -14,9 +14,23 @@ class Feeds(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     posted = models.DateTimeField(auto_now_add=True, null=True)
     likes = models.ManyToManyField(User, related_name="like_post")
+    liked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
+
+
+class Votes(models.Model):
+    CHOICES = (
+        ('liked', "liked"),
+        ('unliked', 'unliked')
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    feed = models.ForeignKey(Feeds, on_delete=models.CASCADE, null=True, blank=True)
+    value = models.CharField(max_length=15, choices=CHOICES)
+
+    def __str__(self):
+        return self.value
 
 
 class Replies(models.Model):

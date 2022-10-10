@@ -17,7 +17,7 @@ class FeedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feeds
         fields = ["id", "content", "title", "likes", "saves",
-                  "shares", "topic", "user", "posted"]
+                  "shares", "topic", "user", "posted", "liked"]
 
 
 class FeedCountSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class FeedCountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feeds
         fields = ["id", "content", "title", "likes", "saves", "shares",
-                  "replies", "topic", "topic_count", "posted"]
+                  "replies", "topic", "topic_count", "posted", "liked"]
 
 
 class ReplieSerializer(serializers.ModelSerializer):
