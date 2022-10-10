@@ -3,7 +3,7 @@ from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from feed.models import Feeds
+from feed.models import Feed
 from feed.serializer import FeedSerializer
 from topics.models import Topics
 from topics.serializers import TopicsCountSerializer
@@ -23,7 +23,7 @@ def get_topics(request):
 def get_one_topic(request, pk):
     if request.method == 'GET':
         topic = Topics.objects.get(id=pk)
-        feed = Feeds.objects.filter(topic_id=topic)
+        feed = Feed.objects.filter(topic_id=topic)
 
         count = feed.count()
         serializer = FeedSerializer(feed, many=True)

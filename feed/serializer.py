@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from feed.models import Feeds, Replies
+from feed.models import Feed, Replies
 from topics.serializers import TopicsSerializer
 from users.serializer import UserSerializer
 
 
 class FeedsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Feeds
+        model = Feed
         fields = "__all__"
 
 
@@ -15,7 +15,7 @@ class FeedSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=False, read_only=True)
 
     class Meta:
-        model = Feeds
+        model = Feed
         fields = ["id", "content", "title", "likes", "saves",
                   "shares", "topic", "user", "posted", "liked"]
 
@@ -28,7 +28,7 @@ class FeedCountSerializer(serializers.ModelSerializer):
         return obj.topic_count.count()
 
     class Meta:
-        model = Feeds
+        model = Feed
         fields = ["id", "content", "title", "likes", "saves", "shares",
                   "replies", "topic", "topic_count", "posted", "liked"]
 

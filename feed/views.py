@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from feed.models import Feeds
+from feed.models import Feed
 from feed.serializer import FeedsSerializer, RepliePostSerializer, FeedSerializer
 from feed.models import Replies
 from feed.serializer import ReplieSerializer
@@ -14,7 +14,7 @@ from topics.models import Topics
 @permission_classes([AllowAny])
 def get_feeds(request):
     if request.method == 'GET':
-        feeds = Feeds.objects.all().order_by("-id")
+        feeds = Feed.objects.all().order_by("-id")
         serializer = FeedSerializer(feeds, many=True)
         return Response(serializer.data)
 
@@ -33,13 +33,13 @@ def get_one_feed(request, pk):
         comments = Replies.objects.filter(post=pk)
         comment = ReplieSerializer(comments, many=True)
 
-        feed = Feeds.objects.get(id=pk, )
+        feed = Feed.objects.get(id=pk, )
         serializer = FeedSerializer(feed, many=False)
         return Response({"data": serializer.data, "comments": comment.data})
 
     if request.method == "POST":
 
-        likes = get_object_or_404(Feeds, id=pk)
+        likes = get_object_or_404(Feed, id=pk)
         likes.likes.add(request.user)
         serializer = RepliePostSerializer(data=request.data, many=False)
         if serializer.is_valid():
@@ -53,7 +53,7 @@ def get_one_feed(request, pk):
 def get_feed_by_topic(request, pk):
     if request.method == 'GET':
         topic = Topics.objects.get(name=pk)
-        feed = Feeds.objects.filter(topic=topic)
+        feed = Feed.objects.filter(topic=topic)
         serializer = FeedsSerializer(feed, many=True)
         return Response(serializer.data)
 
@@ -64,14 +64,14 @@ def like_one_feed(request, pk):
     liked_one = False
     likes_count = ''
     if request.method == 'GET':
-        feed = Feeds.objects.get(id=pk)
+        feed = Feed.objects.get(id=pk)
         if feed.likes.filter(id=request.user.id).exists():
             liked_one = True
             likes_count = feed.likes.count()
         return Response({'likes_count': likes_count, 'liked': liked_one})
 
     if request.method == "POST":
-        likes_post = get_object_or_404(Feeds, id=pk)
+        likes_post = get_object_or_404(Feed, id=pk)
 
         if likes_post.likes.filter(id=request.user.id).exists():
             likes_post.likes.remove(request.user)
@@ -93,7 +93,7 @@ def like_one_feed(request, pk):
 def get_all_feeds_likes(request):
     liked = False
     if request.method == 'GET':
-        feed = Feeds.objects.all()
+        feed = Feed.objects.all()
         if feed.likes.filter(id=request.user.id).exists():
             liked = True
             return liked
