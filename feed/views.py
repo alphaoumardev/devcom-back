@@ -31,14 +31,13 @@ def get_feeds(request):
 def get_one_feed(request, pk):
     if request.method == 'GET':
         comments = Replies.objects.filter(post=pk)
-        comment = ReplieSerializer(comments, many=True)
+        comment = ReplieSerializer(comments, many=True)  # get comments of this post
 
         feed = Feed.objects.get(id=pk, )
         serializer = FeedSerializer(feed, many=False)
         return Response({"data": serializer.data, "comments": comment.data})
 
     if request.method == "POST":
-
         likes = get_object_or_404(Feed, id=pk)
         likes.likes.add(request.user)
         serializer = RepliePostSerializer(data=request.data, many=False)
@@ -54,47 +53,63 @@ def get_feed_by_topic(request, pk):
     if request.method == 'GET':
         topic = Topics.objects.get(name=pk)
         feed = Feed.objects.filter(topic=topic)
-        serializer = FeedsSerializer(feed, many=True)
+        serializer = FeedSerializer(feed, many=True)
         return Response(serializer.data)
 
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def like_one_feed(request, pk):
-    liked_one = False
-    likes_count = ''
-    if request.method == 'GET':
-        feed = Feed.objects.get(id=pk)
-        if feed.likes.filter(id=request.user.id).exists():
-            liked_one = True
-            likes_count = feed.likes.count()
-        return Response({'likes_count': likes_count, 'liked': liked_one})
-
     if request.method == "POST":
         likes_post = get_object_or_404(Feed, id=pk)
-
         if likes_post.likes.filter(id=request.user.id).exists():
             likes_post.likes.remove(request.user)
-            liked_one = False
-
-            likes_count = likes_post.likes.count()
             likes_post.save()
+            return Response("unliked")
+
         else:
             likes_post.likes.add(request.user)
-            liked_one = True
-
-            likes_count = likes_post.likes.count()
             likes_post.save()
-    return Response({'likes_count': likes_count, "liked": liked_one})
+            return Response("liked")
 
 
-@api_view(["GET", "POST"])
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def get_all_feeds_likes(request):
-    liked = False
-    if request.method == 'GET':
-        feed = Feed.objects.all()
-        if feed.likes.filter(id=request.user.id).exists():
-            liked = True
-            return liked
-        return Response({"liked": liked})
+def save_one_feed(request, pk):
+    if request.method == "POST":
+        saves_post = get_object_or_404(Feed, id=pk)
+        if saves_post.saves.filter(id=request.user.id).exists():
+            saves_post.saves.remove(request.user)
+            saves_post.save()
+            return Response("unsaved")
+
+        else:
+            saves_post.saves.add(request.user)
+            saves_post.save()
+            return Response("liked")
+
+# @api_view(["POST"])
+# @permission_classes([IsAuthenticated])
+# def get_feeds_likes(request):
+#     data = request.data
+#     feed = Feed.objects.get(id=request.data['feed_id'])
+#     like, created = Votes.objects.get_or_create(feed=feed, user=request.user)
+#     if like.value == data.get('value'):
+#         like.delete()
+#     else:
+#         like.value = data['value']
+#         like.save()
+#     feed = Votes.objects.get(id=data['feed_id'])
+#     serializer = FeedSerializer(feed, many=False)
+#     return Response(serializer.data)
+#
+# @api_view(["GET", "POST"])
+# @permission_classes([IsAuthenticated])
+# def get_all_feeds_likes(request):
+#     liked = False
+#     if request.method == 'GET':
+#         feed = Feed.objects.all()
+#         if feed.likes.filter(id=request.user.id).exists():
+#             liked = True
+#             return liked
+#         return Response({"liked": liked})

@@ -7,7 +7,7 @@ from .models import *
 class TopicsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topics
-        fields = ["id", "name"]
+        fields = "__all__"
 
 
 class TopicsCountSerializer(serializers.ModelSerializer):
@@ -18,4 +18,4 @@ class TopicsCountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topics
-        fields = ["id", "name", "post_count"]
+        fields = "__all__"

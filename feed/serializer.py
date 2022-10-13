@@ -1,4 +1,7 @@
+import requests
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
+
 from feed.models import Feed, Replies
 from topics.serializers import TopicsSerializer
 from users.serializer import UserSerializer
@@ -13,11 +16,23 @@ class FeedsSerializer(serializers.ModelSerializer):
 class FeedSerializer(serializers.ModelSerializer):
     topic = TopicsSerializer(required=False, read_only=True)
     user = UserSerializer(required=False, read_only=True)
+    num_likes = serializers.ReadOnlyField(read_only=True, required=False)
+    num_replies = serializers.ReadOnlyField(read_only=True, required=False)
+    num_saves = serializers.ReadOnlyField(read_only=True, required=False)
 
     class Meta:
         model = Feed
-        fields = ["id", "content", "title", "likes", "saves",
-                  "shares", "topic", "user", "posted", "liked"]
+        fields = '__all__'
+
+    # @property
+    # def get_lik(self, obj):
+    #     liked_post = get_object_or_404(Feed, id=obj.user)
+    #
+    #     if liked_post.likes.filter(related_like__user=obj.user.id).exists():
+    #         print(self.user)
+    #         return True
+    #     else:
+    #         return False
 
 
 class FeedCountSerializer(serializers.ModelSerializer):
@@ -29,8 +44,7 @@ class FeedCountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feed
-        fields = ["id", "content", "title", "likes", "saves", "shares",
-                  "replies", "topic", "topic_count", "posted", "liked"]
+        fields = '__all__'
 
 
 class ReplieSerializer(serializers.ModelSerializer):
@@ -38,10 +52,10 @@ class ReplieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Replies
-        fields = ["id", "post", "comment", "like", "commentator", "commentated"]
+        fields = '__all__'
 
 
 class RepliePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Replies
-        fields = ["id", "post", "comment", "like", "commentator", "commentated"]
+        fields = '__all__'
