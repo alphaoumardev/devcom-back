@@ -1,7 +1,10 @@
+from django.db.models import Q
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from feed.models import Feed
 from feed.serializer import FeedsSerializer, RepliePostSerializer, FeedSerializer
@@ -14,11 +17,26 @@ from topics.models import Topics
 @permission_classes([AllowAny])
 def get_feeds(request):
     if request.method == 'GET':
-        feeds = Feed.objects.all().order_by("-id")
+        query = request.GET.get('query') if request.GET.get('query') is not None else ''
+        feeds = Feed.objects.filter(
+            Q(topic__name=query) | Q(title__contains=query) | Q(content__contains=query) |
+            Q(title__exact=query)).order_by("-id")
         serializer = FeedSerializer(feeds, many=True)
         return Response(serializer.data)
 
     if request.method == 'POST':
+        serializer = FeedsSerializer(data=request.data, many=False)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+
+class CreatePost(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    @staticmethod
+    def post(request):
         serializer = FeedsSerializer(data=request.data, many=False)
         if serializer.is_valid():
             serializer.save()

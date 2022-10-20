@@ -1,7 +1,4 @@
-import requests
 from rest_framework import serializers
-from rest_framework.generics import get_object_or_404
-
 from feed.models import Feed, Replies
 from topics.serializers import TopicsSerializer
 from users.serializer import UserSerializer

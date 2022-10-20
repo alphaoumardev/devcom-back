@@ -1,4 +1,7 @@
+from datetime import timedelta
 from pathlib import Path
+
+from rest_framework.settings import api_settings
 
 import notifications.apps
 
@@ -23,6 +26,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'knox',
     'django_rest_passwordreset',
+
 
     'feed.apps.FeedConfig',
     'dev.apps.DevConfig',
@@ -95,7 +99,13 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+CLOUDINARY_URL = '/devcom/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'diallo',
+    'API_KEY': '332996771719135',
+    'API_SECRET': 'V0R3h7FwQi54OLbqeppbojibVO0'
+}
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.BasicAuthentication',
@@ -128,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'ASIA/Shanghai'
 
 USE_I18N = True
 
@@ -137,9 +147,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/assets/'
+MEDIA_ROOT = BASE_DIR/'assets/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+REST_KNOX = {
+  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+  'TOKEN_TTL': timedelta(hours=1),  # default time 10h
+  'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+  'TOKEN_LIMIT_PER_USER': None,
+  'AUTO_REFRESH': False,
+  # 'EXPIRY_DATETIME_FORMAT': api_settings.DATETME_FORMAT,
+}

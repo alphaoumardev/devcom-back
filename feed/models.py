@@ -1,9 +1,5 @@
-import datetime
-
 from django.contrib.auth.models import User
 from django.db import models
-from rest_framework.generics import get_object_or_404
-
 from topics.models import Topics
 
 
@@ -14,8 +10,9 @@ class Feed(models.Model):
     topic = models.ForeignKey(Topics, on_delete=models.PROTECT, related_name="topic", null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     posted = models.DateTimeField(auto_now_add=True, null=True)
-    likes = models.ManyToManyField(User, related_name="related_like")
-    saves = models.ManyToManyField(User, related_name="related_save")
+    cover_image = models.ImageField(upload_to='devcom', null=True, blank=True,)
+    likes = models.ManyToManyField(User, related_name="related_like", blank=True)
+    saves = models.ManyToManyField(User, related_name="related_save", blank=True)
 
     def __str__(self):
         return self.title
