@@ -13,6 +13,7 @@ class Feed(models.Model):
     cover_image = models.ImageField(upload_to='devcom', null=True, blank=True,)
     likes = models.ManyToManyField(User, related_name="related_like", blank=True)
     saves = models.ManyToManyField(User, related_name="related_save", blank=True)
+    views = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title

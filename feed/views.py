@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -51,11 +51,13 @@ def get_one_feed(request, pk):
         comments = Replies.objects.filter(post=pk)
         comment = ReplieSerializer(comments, many=True)  # get comments of this post
 
-        feed = Feed.objects.get(id=pk, )
+        feed = Feed.objects.get(id=pk)
+        feed.views += 1
+        feed.save()
         serializer = FeedSerializer(feed, many=False)
         return Response({"data": serializer.data, "comments": comment.data})
 
-    if request.method == "POST":
+    if request.method == "POST":  # to reply
         likes = get_object_or_404(Feed, id=pk)
         likes.likes.add(request.user)
         serializer = RepliePostSerializer(data=request.data, many=False)
@@ -106,28 +108,11 @@ def save_one_feed(request, pk):
             saves_post.save()
             return Response("liked")
 
-# @api_view(["POST"])
-# @permission_classes([IsAuthenticated])
-# def get_feeds_likes(request):
-#     data = request.data
-#     feed = Feed.objects.get(id=request.data['feed_id'])
-#     like, created = Votes.objects.get_or_create(feed=feed, user=request.user)
-#     if like.value == data.get('value'):
-#         like.delete()
-#     else:
-#         like.value = data['value']
-#         like.save()
-#     feed = Votes.objects.get(id=data['feed_id'])
-#     serializer = FeedSerializer(feed, many=False)
-#     return Response(serializer.data)
-#
-# @api_view(["GET", "POST"])
-# @permission_classes([IsAuthenticated])
-# def get_all_feeds_likes(request):
-#     liked = False
-#     if request.method == 'GET':
-#         feed = Feed.objects.all()
-#         if feed.likes.filter(id=request.user.id).exists():
-#             liked = True
-#             return liked
-#         return Response({"liked": liked})
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_trending_feed(request):
+    if request.method == 'GET':
+        feed = Feed.objects.annotate(Count('views')).order_by('-views')[:4]
+        serializer = FeedSerializer(feed, many=True)
+        return Response(serializer.data)

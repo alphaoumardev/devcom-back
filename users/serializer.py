@@ -13,11 +13,20 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username',  'email',  'password']
+        fields = ['id', 'username', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
+    def validate(self, data):
+        users_qs = User.objects.filter(email=data['email'])
+        user_name = User.objects.filter(username=['username'])
+        if users_qs.exists() or user_name.exists():
+            raise serializers.ValidationError('user with this email and username already exists')
+        else:
+            return data
+
     def create(self, validated_data):
-        user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'],)
+        user = User.objects.create_user(validated_data['username'], validated_data['email'],
+                                        validated_data['password'], )
         return user
 
 

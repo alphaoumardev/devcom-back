@@ -13,7 +13,7 @@ from topics.serializers import TopicsCountSerializer, TopicsSerializer
 @permission_classes([AllowAny])
 def get_topics(request):
     if request.method == 'GET':
-        topic = Topics.objects.all().annotate(post_count=Count("topic")).order_by('-post_count') # and count
+        topic = Topics.objects.all().annotate(post_count=Count("topic")).order_by('-post_count')      # and count
         serializer = TopicsCountSerializer(topic, many=True)
         return Response(serializer.data)
     if request.method == 'POST':
